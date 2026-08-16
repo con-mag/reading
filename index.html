@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4eee2">
+  <meta name="description" content="CON — خريطة قرائية تفاعلية تتعامل مع الكتب كرحلة لا كقاعدة بيانات.">
+  <title>CON — خريطة القراءة · V1 · 801 · CLEAN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=804">
+</head>
+<body data-con-build="V1-801-CLEAN-FINAL">
+  <div class="paper-grain" aria-hidden="true"></div>
+  <div class="sky-field sky-field-a" aria-hidden="true"></div>
+  <div class="sky-field sky-field-b" aria-hidden="true"></div>
+  <div class="sky-glow" aria-hidden="true"></div>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+
+  <section id="gate" class="gate">
+    <div class="gate-ornament" aria-hidden="true"></div>
+    <div class="gate-card">
+      <div class="gate-brand">
+        <img src="con-logo-transparent.png" alt="" class="gate-logo">
+        <span class="brand-caption">CON · READING MAP</span>
+      </div>
+      <p class="eyebrow">A QUIET PLACE FOR BOOKS</p>
+      <h1>ادخل إلى <em>الخريطة</em></h1>
+      <p class="gate-copy">801 مدخلًا قرائيًا، مرتبة كرحلة طويلة في الأدب والفكر — من العتبة إلى صنعة المقالة.</p>
+      <form id="accessForm">
+        <label for="accessCode">رمز الدخول</label>
+        <div class="input-shell">
+          <input id="accessCode" autocomplete="off" inputmode="text" placeholder="CON2027" maxlength="20">
+          <button type="submit" aria-label="دخول">←</button>
+        </div>
+        <p id="accessError" class="error" role="alert"></p>
+      </form>
+      <div class="gate-foot">مجلة CON · الترشيحات من محمد رمضان السيد، مؤسس كون</div>
+    </div>
+  </section>
+
+  <div id="app" class="app hidden">
+    <header class="topbar">
+      <button id="mobileMenu" class="icon-btn" aria-label="فتح الخريطة">☰</button>
+      <a class="top-brand" href="#" aria-label="CON">
+        <span class="mini-mark"><img src="con-logo-transparent.png" alt=""></span>
+        <span><strong>CON</strong><small>READING MAP</small></span>
+      </a>
+      <div class="top-progress" aria-label="التقدم الكلي">
+        <span>رحلتك</span><strong id="topPercent">0%</strong>
+        <div class="tiny-track"><i id="topBar"></i></div>
+      </div>
+      <div class="top-actions">
+        <button id="themeToggle" class="theme-btn" aria-label="تبديل المظهر">☼</button>
+        <button id="exitBtn" class="exit-btn">مغادرة</button>
+      </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+      <div class="side-brand">
+        <span class="side-kicker">THE READING MAP</span>
+        <div><strong>مسارات CON</strong><b id="levelCount">11 مستويات</b></div>
+      </div>
+      <nav id="levelNav" aria-label="مستويات الخريطة"></nav>
+      <div class="side-note">
+        <span class="pulse"></span>
+        <div><strong>تُحفظ رحلتك هنا</strong><small>الصفحة، الوقت، والإنجازات تبقى على جهازك.</small></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="status-line"><span class="live-dot"></span> خريطة قراءة · 11 مسارًا</div>
+          <h2>لا تقرأ أكثر.<br><em>اقرأ أعمق.</em></h2>
+          <p>ليست قائمة كتب. إنها خريطة تتسع مع كل قراءة: أدب، فلسفة، تاريخ أفكار، علوم إنسانية، وصنعة الكتابة.</p>
+          <div class="hero-actions">
+            <button id="continueBtn" class="primary-btn">تابع من حيث توقفت <span>←</span></button>
+            <button id="randomBtn" class="secondary-btn">اترك الكتاب يختارك <span>✦</span></button>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+          <div class="orbit-dot dot-a"></div><div class="orbit-dot dot-b"></div>
+          <div class="hero-logo"><img src="con-logo-transparent.png" alt=""><span>CON</span></div>
+          <div class="art-note">READ<br>DEEPER</div>
+        </div>
+      </section>
+
+      <section class="stats-grid" aria-label="ملخص الرحلة">
+        <article class="stat-card"><span>المداخل</span><strong id="statBooks">801</strong><small>في الخريطة</small></article>
+        <article class="stat-card"><span>المُنجز</span><strong id="statDone">0</strong><small>كتابًا / مدخلًا مكتملًا</small></article>
+        <article class="stat-card"><span>المستوى الحالي</span><strong id="statLevel">01</strong><small id="statLevelName">العتبة</small></article>
+        <article class="stat-card accent-stat"><span>وقت القراءة</span><strong id="statTime">0د</strong><small id="statSpeed">ابدأ جلسة قراءة</small></article>
+      </section>
+
+      <section id="sectionHead" class="section-head">
+        <div><p class="kicker">THE MAP</p><h3>الخريطة القرائية</h3><p class="section-intro">اختر مسارًا، وافتحه بكلمته، ثم اترك الكتب تقودك.</p></div>
+        <div class="search-shell"><span>⌕</span><input id="searchInput" aria-label="البحث" placeholder="كتاب أو مؤلف..." autocomplete="off"></div>
+      </section>
+
+      <section id="levelsGrid" class="levels-grid"></section>
+
+      <section id="levelView" class="level-view hidden">
+        <button id="backBtn" class="back-btn">→ العودة إلى الخريطة</button>
+        <div class="level-hero">
+          <div><span class="level-chip" id="lvChip">LEVEL 01</span><h3 id="lvTitle"></h3><p id="lvSubtitle"></p></div>
+          <div class="level-meter"><div><strong id="lvPercent">0%</strong><small id="lvMeta"></small></div><div class="meter-track"><i id="lvBar"></i></div></div>
+        </div>
+        <div id="booksGrid" class="books-grid"></div>
+        <div id="unitsBox" class="units-box hidden"></div>
+      </section>
+
+      <footer class="footer"><div><strong>CON</strong> · خريطة القراءة</div><div>صُممت لتكون مكانًا للقراءة، لا قاعدة بيانات للكتب.</div></footer>
+    </main>
+  </div>
+
+  <dialog id="passwordDialog" class="modal">
+    <form method="dialog" id="levelPasswordForm" class="modal-card">
+      <button id="passwordClose" type="button" class="close-btn" aria-label="إغلاق">×</button>
+      <span class="modal-code">SECRET WORD</span>
+      <h3 id="passTitle">فتح المستوى</h3>
+      <p>لكل مستوى كلمته الخاصة. أدخلها لفتح المسار.</p>
+      <input id="levelPassword" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="••••" aria-label="كلمة سر المستوى">
+      <p id="passError" class="error"></p>
+      <button class="primary-btn wide" value="default">فتح المسار ↗</button>
+    </form>
+  </dialog>
+
+  <dialog id="readerDialog" class="modal">
+    <form method="dialog" id="readerForm" class="modal-card reader-modal">
+      <button id="readerClose" type="button" class="close-btn" aria-label="إغلاق">×</button>
+      <span class="modal-code">READING NOTE</span>
+      <h3 id="readerTitle">موضع القراءة</h3>
+      <p id="readerMeta" class="reader-meta"></p>
+      <div class="reader-position">
+        <label for="readerPage">توقفت عند الصفحة</label>
+        <div class="page-input"><input id="readerPage" type="number" min="0" inputmode="numeric" placeholder="مثال: 127"><span>صفحة</span></div>
+      </div>
+      <div class="session-box">
+        <div><span>جلسة القراءة</span><strong id="sessionTimer">00:00</strong></div>
+        <button id="sessionToggle" type="button" class="timer-btn">ابدأ القراءة</button>
+      </div>
+      <div class="reader-stats"><div><span>إجمالي الوقت</span><strong id="readerTotalTime">0د</strong></div><div><span>سرعتك</span><strong id="readerSpeed">—</strong></div></div>
+      <button id="saveReader" type="button" class="primary-btn wide">حفظ الموضع</button>
+    </form>
+  </dialog>
+
+  <dialog id="exitDialog" class="modal">
+    <div class="modal-card exit-modal">
+      <button id="exitClose" type="button" class="close-btn" aria-label="إغلاق">×</button>
+      <span class="modal-code">A SMALL PAUSE</span>
+      <h3>أثر قراءتك</h3>
+      <p>قبل أن تغادر، هذه ليست لوحة نتائج؛ إنها مجرد علامة على الطريق.</p>
+      <div class="exit-stats"><div><span>المُنجز</span><strong id="exitDone">0</strong></div><div><span>التقدم</span><strong id="exitPercent">0%</strong></div><div><span>وقت القراءة</span><strong id="exitTime">0د</strong></div></div>
+      <div class="exit-progress"><div><span>رحلتك القرائية</span><b id="exitProgressLabel">0%</b></div><div class="meter-track"><i id="exitBar"></i></div></div>
+      <p class="exit-message">كل موضع حفظته وكل دقيقة قرأتها ستبقى هنا حتى تعود.</p>
+      <button id="confirmExit" type="button" class="primary-btn wide">غادر بهدوء ↗</button>
+    </div>
+  </dialog>
+
+  <dialog id="authorDialog" class="modal">
+    <div class="modal-card author-modal">
+      <button id="authorClose" class="close-btn" aria-label="إغلاق">×</button>
+      <div class="author-orbit"><span>م</span></div>
+      <span class="modal-code">AUTHOR</span>
+      <h3 id="authorName"></h3><p id="authorWorks" class="muted"></p>
+      <div class="author-grid"><div><span>عن المؤلف</span><p id="authorBio"></p></div><div><span>نصائح القراءة</span><p id="authorTips"></p></div></div>
+      <div class="author-note"><b>ملاحظة</b><p id="authorNote"></p></div>
+    </div>
+  </dialog>
+
+  <div id="farewell" class="farewell" aria-hidden="true"><div>إلى اللقاء…<span>الكتاب يعرف طريق العودة.</span></div></div>
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="data.js?v=804"></script>
+  <script src="app.js?v=804"></script>
+</body>
+</html>
