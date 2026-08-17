@@ -34,9 +34,6 @@ if(localStorage.getItem(PASSWORD_SCHEMA_KEY) !== "exact-level-passwords-v4") {
 let currentLevel = null;
 let pendingLevel = null;
 let currentBookId = null;
-let timerId = null;
-let sessionStartedAt = 0;
-let sessionElapsed = 0;
 let searchFrame = 0;
 let booted = false;
 
@@ -65,7 +62,7 @@ function toast(message){
 }
 
 function initRefs(){
-  ["gate","app","accessForm","accessCode","accessError","themeToggle","levelNav","levelsGrid","levelView","sectionHead","searchInput","continueBtn","randomBtn","backBtn","mobileMenu","sidebar","exitBtn","passwordDialog","passwordClose","levelPasswordForm","levelPassword","passTitle","passError","exitDialog","exitClose","confirmExit","authorClose","authorDialog","authorName","authorWorks","authorBio","authorTips","authorNote","booksGrid","unitsBox","lvChip","lvTitle","lvSubtitle","lvPercent","lvBar","lvMeta","topPercent","topBar","statBooks","statDone","statLevel","statLevelName","statTime","statSpeed","exitDone","exitPercent","exitTime","exitProgressLabel","exitBar","readerDialog","readerClose","readerForm","readerTitle","readerMeta","readerPage","sessionTimer","sessionToggle","readerTotalTime","readerSpeed","saveReader","toast","farewell","levelCount"]
+  ["gate","app","accessForm","accessCode","accessError","themeToggle","resetBtn","levelNav","levelsGrid","levelView","sectionHead","searchInput","continueBtn","randomBtn","backBtn","mobileMenu","sidebar","exitBtn","passwordDialog","passwordClose","levelPasswordForm","levelPassword","passTitle","passError","exitDialog","exitClose","confirmExit","authorClose","authorDialog","authorName","authorWorks","authorBio","authorTips","authorNote","booksGrid","unitsBox","lvChip","lvTitle","lvSubtitle","lvPercent","lvBar","lvMeta","topPercent","topBar","statBooks","statDone","statLevel","statLevelName","statPages","exitDone","exitPercent","exitPages","exitProgressLabel","exitBar","readerDialog","readerClose","readerForm","readerTitle","readerMeta","readerPage","saveReader","toast","farewell","levelCount"]
     .forEach(id => refs[id] = document.getElementById(id));
   if(!refs.sectionHead) refs.sectionHead = document.querySelector(".section-head");
 }
@@ -76,6 +73,7 @@ function initTheme(){
   refs.themeToggle.addEventListener("click", () => {
     applyTheme(document.body.classList.contains("dark") ? "light" : "dark", true);
   });
+  refs.resetBtn.addEventListener("click", resetData);
 }
 
 function applyTheme(mode, announce){
@@ -145,9 +143,16 @@ function bindEvents(){
   });
   refs.booksGrid.addEventListener("click", handleBookGridClick);
   refs.readerClose.addEventListener("click", closeReader);
-  refs.sessionToggle.addEventListener("click", toggleSession);
   refs.saveReader.addEventListener("click", saveReaderNote);
-  refs.readerDialog.addEventListener("close", stopSession);
+}
+
+function resetData(){
+  const confirmed = window.confirm("هل أنت متأكد؟ سيتم تصفير رحلتك القرائية والكتب والمواضع المحفوظة، وسيعود الموقع كأنه جديد.");
+  if(!confirmed) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(LEGACY_STORAGE_KEY);
+  localStorage.removeItem(PASSWORD_SCHEMA_KEY);
+  window.location.reload();
 }
 
 function continueReading(){
@@ -403,10 +408,7 @@ function updateStats(){
   const active = DATA.levels.find(level => level.items.some((_,i) => !isDone(`${level.id}-${i+1}`))) || DATA.levels.at(-1);
   refs.statLevel.textContent = String(active.id).padStart(2,"0");
   refs.statLevelName.textContent = active.id === 11 ? "فريق CON" : active.name;
-  const totalMinutes = totalReadingMinutes();
-  refs.statTime.textContent = formatMinutes(totalMinutes);
-  const speed = readingSpeed();
-  refs.statSpeed.textContent = speed ? `${speed} صفحة/ساعة` : "ابدأ جلسة قراءة";
+  refs.statPages.textContent = totalPagesRead();
 }
 
 function search(query){
@@ -433,14 +435,17 @@ function randomBook(){
   const pick = pool[Math.floor(Math.random() * pool.length)];
   openLevel(pick.level);
   requestAnimationFrame(() => {
+    document.querySelectorAll(".random-picked").forEach(card => card.classList.remove("random-picked"));
     const card = document.querySelector(`[data-book="${CSS.escape(pick.id)}"]`);
-    card?.scrollIntoView({behavior:"smooth",block:"center"});
-    card?.animate([{transform:"translateY(0)"},{transform:"translateY(-4px)"},{transform:"translateY(0)"}],{duration:550,easing:"ease-out"});
+    if(!card) return;
+    card.scrollIntoView({behavior:"smooth",block:"center"});
+    card.classList.add("random-picked");
+    setTimeout(() => card.classList.remove("random-picked"), 2200);
+    toast(`اختار لك: ${extractTitle(pick.title)}`);
   });
 }
 
 function openReader(id){
-  stopSession();
   currentBookId = id;
   const found = findBook(id);
   if(!found) return;
@@ -448,66 +453,23 @@ function openReader(id){
   refs.readerTitle.textContent = extractTitle(found.title);
   refs.readerMeta.textContent = `${extractAuthor(found.title) || "مؤلف غير محدد"} · ${levelName(found.level)}`;
   refs.readerPage.value = record.page || "";
-  refs.readerTotalTime.textContent = formatMinutes(record.time || 0);
-  refs.readerSpeed.textContent = speedFor(record) || "—";
-  sessionElapsed = 0;
-  refs.sessionTimer.textContent = "00:00";
-  refs.sessionToggle.textContent = "ابدأ القراءة";
   refs.readerDialog.showModal();
 }
 
 function closeReader(){
-  stopSession();
   if(refs.readerDialog.open) refs.readerDialog.close();
-}
-
-function toggleSession(){
-  if(timerId){
-    stopSession();
-    refs.sessionToggle.textContent = "استئناف القراءة";
-    return;
-  }
-  sessionStartedAt = Date.now();
-  timerId = setInterval(updateSessionTimer, 1000);
-  refs.sessionToggle.textContent = "إيقاف الجلسة";
-  updateSessionTimer();
-}
-
-function updateSessionTimer(){
-  if(!timerId) return;
-  sessionElapsed = Math.floor((Date.now() - sessionStartedAt) / 1000);
-  refs.sessionTimer.textContent = formatClock(sessionElapsed);
-}
-
-function stopSession(){
-  if(timerId){
-    sessionElapsed = Math.max(sessionElapsed, Math.floor((Date.now() - sessionStartedAt) / 1000));
-    clearInterval(timerId);
-    timerId = null;
-    if(currentBookId && sessionElapsed > 0){
-      const record = bookRecord(currentBookId);
-      record.time = (record.time || 0) + sessionElapsed;
-      save();
-      refs.readerTotalTime && (refs.readerTotalTime.textContent = formatMinutes(record.time));
-      refs.readerSpeed && (refs.readerSpeed.textContent = speedFor(record) || "—");
-      updateStats();
-    }
-  }
 }
 
 function saveReaderNote(){
   if(!currentBookId) return;
-  stopSession();
   const record = bookRecord(currentBookId);
   record.page = refs.readerPage.value.trim();
   save();
   const found = findBook(currentBookId);
-  refs.readerTotalTime.textContent = formatMinutes(record.time || 0);
-  refs.readerSpeed.textContent = speedFor(record) || "—";
   refs.readerDialog.close();
   if(found) renderBooks(DATA.levels.find(level => level.id === found.level), refs.searchInput.value);
   updateStats();
-  toast(record.page ? `حُفظ موضع القراءة: صفحة ${record.page}.` : "حُفظت جلسة القراءة.");
+  toast(record.page ? `حُفظ موضع القراءة: صفحة ${record.page}.` : "حُفظ موضع القراءة.");
 }
 
 function findBook(id){
@@ -519,44 +481,15 @@ function findBook(id){
   return title == null ? null : {id,title,index,level:levelId};
 }
 
-function totalReadingMinutes(){
-  return Object.values(state.reading).reduce((sum,item) => sum + ((item.time || 0) / 60),0);
-}
-
-function readingSpeed(){
-  const pages = Object.values(state.reading).reduce((sum,item) => sum + (Number(item.page) || 0),0);
-  const minutes = totalReadingMinutes();
-  return pages > 0 && minutes > 0 ? Math.round(pages / (minutes / 60)) : 0;
-}
-
-function speedFor(record){
-  const pages = Number(record.page) || 0;
-  const minutes = Number(record.time || 0) / 60;
-  return pages > 0 && minutes > 0 ? `${Math.round(pages / (minutes / 60))} صفحة/ساعة` : "";
-}
-
-function formatMinutes(minutes){
-  const totalMinutesValue = Math.max(0, Math.round(minutes));
-  if(totalMinutesValue < 60) return `${totalMinutesValue}د`;
-  const hours = Math.floor(totalMinutesValue / 60);
-  const mins = totalMinutesValue % 60;
-  return mins ? `${hours}س ${mins}د` : `${hours}س`;
-}
-
-function formatClock(seconds){
-  const s = Math.max(0, seconds);
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
-  return h ? `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}` : `${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+function totalPagesRead(){
+  return Object.values(state.reading).reduce((sum,item) => sum + (Number(item.page) || 0),0);
 }
 
 function openExitSummary(){
-  stopSession();
   const progress = pct(completedCount());
   refs.exitDone.textContent = completedCount();
   refs.exitPercent.textContent = `${progress}%`;
-  refs.exitTime.textContent = formatMinutes(totalReadingMinutes());
+  refs.exitPages.textContent = totalPagesRead();
   refs.exitProgressLabel.textContent = `${progress}%`;
   refs.exitBar.style.width = `${progress}%`;
   refs.exitDialog.showModal();

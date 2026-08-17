@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f4eee2">
   <meta name="description" content="CON — خريطة قرائية تفاعلية تتعامل مع الكتب كرحلة لا كقاعدة بيانات.">
-  <title>CON — خريطة القراءة · V1 · 801 · CLEAN</title>
+  <title>الخريطة القرائية — كون</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=804">
+  <link rel="stylesheet" href="styles.css?v=806">
 </head>
 <body data-con-build="V1-801-CLEAN-FINAL">
   <div class="paper-grain" aria-hidden="true"></div>
@@ -28,7 +28,7 @@
       </div>
       <p class="eyebrow">A QUIET PLACE FOR BOOKS</p>
       <h1>ادخل إلى <em>الخريطة</em></h1>
-      <p class="gate-copy">801 مدخلًا قرائيًا، مرتبة كرحلة طويلة في الأدب والفكر — من العتبة إلى صنعة المقالة.</p>
+      <p class="gate-copy">800 مدخلًا قرائيًا، مرتبة كرحلة طويلة في الأدب والفكر — من العتبة إلى صنعة المقالة.</p>
       <form id="accessForm">
         <label for="accessCode">رمز الدخول</label>
         <div class="input-shell">
@@ -54,6 +54,7 @@
       </div>
       <div class="top-actions">
         <button id="themeToggle" class="theme-btn" aria-label="تبديل المظهر">☼</button>
+        <button id="resetBtn" class="theme-btn reset-btn" aria-label="تصفير بيانات الرحلة" title="تصفير بيانات الرحلة">↺</button>
         <button id="exitBtn" class="exit-btn">مغادرة</button>
       </div>
     </header>
@@ -66,7 +67,7 @@
       <nav id="levelNav" aria-label="مستويات الخريطة"></nav>
       <div class="side-note">
         <span class="pulse"></span>
-        <div><strong>تُحفظ رحلتك هنا</strong><small>الصفحة، الوقت، والإنجازات تبقى على جهازك.</small></div>
+        <div><strong>تُحفظ رحلتك هنا</strong><small>مواضع القراءة والإنجازات تبقى على جهازك.</small></div>
       </div>
     </aside>
 
@@ -79,21 +80,23 @@
           <div class="hero-actions">
             <button id="continueBtn" class="primary-btn">تابع من حيث توقفت <span>←</span></button>
             <button id="randomBtn" class="secondary-btn">اترك الكتاب يختارك <span>✦</span></button>
+            <a class="secondary-btn magazine-btn" href="https://t.me/con_mag" target="_blank" rel="noopener noreferrer">مجلة كون <span>↗</span></a>
+            <a class="secondary-btn founder-btn" href="https://con-mag.github.io/mo-portfolio/" target="_blank" rel="noopener noreferrer">عن مؤسس كون <span>↗</span></a>
           </div>
         </div>
         <div class="hero-art" aria-hidden="true">
           <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
           <div class="orbit-dot dot-a"></div><div class="orbit-dot dot-b"></div>
-          <div class="hero-logo"><img src="con-logo-transparent.png" alt=""><span>CON</span></div>
+          <div class="hero-logo"><img src="con-logo-transparent.png" alt=""></div>
           <div class="art-note">READ<br>DEEPER</div>
         </div>
       </section>
 
       <section class="stats-grid" aria-label="ملخص الرحلة">
-        <article class="stat-card"><span>المداخل</span><strong id="statBooks">801</strong><small>في الخريطة</small></article>
+        <article class="stat-card"><span>المداخل</span><strong id="statBooks">800</strong><small>في الخريطة</small></article>
         <article class="stat-card"><span>المُنجز</span><strong id="statDone">0</strong><small>كتابًا / مدخلًا مكتملًا</small></article>
         <article class="stat-card"><span>المستوى الحالي</span><strong id="statLevel">01</strong><small id="statLevelName">العتبة</small></article>
-        <article class="stat-card accent-stat"><span>وقت القراءة</span><strong id="statTime">0د</strong><small id="statSpeed">ابدأ جلسة قراءة</small></article>
+        <article class="stat-card accent-stat"><span>الصفحات المقروءة</span><strong id="statPages">0</strong><small>تُحسب من مواضع القراءة التي تحفظها</small></article>
       </section>
 
       <section id="sectionHead" class="section-head">
@@ -139,11 +142,6 @@
         <label for="readerPage">توقفت عند الصفحة</label>
         <div class="page-input"><input id="readerPage" type="number" min="0" inputmode="numeric" placeholder="مثال: 127"><span>صفحة</span></div>
       </div>
-      <div class="session-box">
-        <div><span>جلسة القراءة</span><strong id="sessionTimer">00:00</strong></div>
-        <button id="sessionToggle" type="button" class="timer-btn">ابدأ القراءة</button>
-      </div>
-      <div class="reader-stats"><div><span>إجمالي الوقت</span><strong id="readerTotalTime">0د</strong></div><div><span>سرعتك</span><strong id="readerSpeed">—</strong></div></div>
       <button id="saveReader" type="button" class="primary-btn wide">حفظ الموضع</button>
     </form>
   </dialog>
@@ -154,9 +152,9 @@
       <span class="modal-code">A SMALL PAUSE</span>
       <h3>أثر قراءتك</h3>
       <p>قبل أن تغادر، هذه ليست لوحة نتائج؛ إنها مجرد علامة على الطريق.</p>
-      <div class="exit-stats"><div><span>المُنجز</span><strong id="exitDone">0</strong></div><div><span>التقدم</span><strong id="exitPercent">0%</strong></div><div><span>وقت القراءة</span><strong id="exitTime">0د</strong></div></div>
+      <div class="exit-stats"><div><span>الكتب المقروءة</span><strong id="exitDone">0</strong></div><div><span>الصفحات المقروءة</span><strong id="exitPages">0</strong></div><div><span>التقدم</span><strong id="exitPercent">0%</strong></div></div>
       <div class="exit-progress"><div><span>رحلتك القرائية</span><b id="exitProgressLabel">0%</b></div><div class="meter-track"><i id="exitBar"></i></div></div>
-      <p class="exit-message">كل موضع حفظته وكل دقيقة قرأتها ستبقى هنا حتى تعود.</p>
+      <p class="exit-message">كل موضع قراءة تحفظه سيبقى هنا حتى تعود، والصفحات التي أدخلتها ستُجمع في أثرك القرائي.</p>
       <button id="confirmExit" type="button" class="primary-btn wide">غادر بهدوء ↗</button>
     </div>
   </dialog>
@@ -175,7 +173,7 @@
   <div id="farewell" class="farewell" aria-hidden="true"><div>إلى اللقاء…<span>الكتاب يعرف طريق العودة.</span></div></div>
   <div id="toast" class="toast" role="status"></div>
 
-  <script src="data.js?v=804"></script>
-  <script src="app.js?v=804"></script>
+  <script src="data.js?v=806"></script>
+  <script src="app.js?v=806"></script>
 </body>
 </html>
